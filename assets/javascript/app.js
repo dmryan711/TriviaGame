@@ -7,30 +7,36 @@ function TriviaQuestion(cQuestion,cAnswer,cAnswersArray ,cIsanswered){
 
   var questionBank = [];
   var currentQuestionIndex = 0;
-  var totalQuestions = 5;
+  var totalQuestions = 6;
   var totalCorrectQuestions = 0;
   var totalIncorrectQuestions = 0;
   const winState = "win";
   const loseState = "lose";
   const timesUpState = "timesup";
-  const fixedCountDownAmount = 1; //10
-  const timeOut = 1000; //3000
-  var countDownAmount = 1; //10
+  const fixedCountDownAmount = 10; //10
+  const timeOut = 3000; //3000
+  var countDownAmount = 10; //10
   var countDownClock;
   var clockRunning = false;
 
   function gameStart(){
-    var testOne = new TriviaQuestion("Question 1","correct",["incorrect 1","incorrect 2","correct", "incorrect 3"],false);
-    questionBank.push(testOne);
+    var one = new TriviaQuestion("Who did Zach Morris kiss?","Everyone",["Kelly","Sarah","Everyone", "A lamp"],false);
+    questionBank.push(one);
 
-    var testTwo = new TriviaQuestion("Question 2","correct",["incorrect 1","incorrect 2","correct", "incorrect 3"],false);
-    questionBank.push(testTwo);
+    var two = new TriviaQuestion("What is the name of the actor who plays Zack Morris?","Mark-Paul Gosselaar",["Mark-Paul Gosselaar","Kevin Bacon","Lance Bass", "Prince"],false);
+    questionBank.push(two);
 
-    var testThree = new TriviaQuestion("Question 3","correct",["incorrect 1","incorrect 2","correct", "incorrect 3"],false);
-    questionBank.push(testThree);
+    var three = new TriviaQuestion("Why Zach Morris?","Why not",["Just because","Why not","First thing I googled", "Wrong answer"],false);
+    questionBank.push(three);
 
-    var testFour = new TriviaQuestion("Question 4","correct",["incorrect 1","incorrect 2","correct", "incorrect 3"],false);
-    questionBank.push(testFour);
+    var four = new TriviaQuestion("Which cast member of SBTB was born on March 1st 1974?","Zack Morris",["Zack Morris","Zach Morris","Zakc Moris", "Mack Zorris"],false);
+    questionBank.push(four);
+
+    var five = new TriviaQuestion("In question 3, how did I spell Zack Morris?","Zach Morris",["Zach Morris","Zac Moris","Zakc Moris", "Zack Moris"],false);
+    questionBank.push(five);
+
+    var six = new TriviaQuestion("What was the name of school in SBTB?","Bayside High",["Zach Morris High","Bayside High","Oceanside High", "Oceanside High School"],false);
+    questionBank.push(six);
     
 
     //Log the question bank
@@ -153,14 +159,14 @@ function displayModalWithState(stateString){
         //TO DO: Display Lose modal
         $("#user-message-title").text("Incorrect")
         $("#user-message").text("The correct answer was "+questionBank[currentQuestionIndex].answer);
-        totalIncorrectQuestions--;
+        totalIncorrectQuestions++
 
 
     }else if(stateString === timesUpState){
         $("#user-message-title").text("Time's Up")
         $("#user-message").text("The correct answer was "+questionBank[currentQuestionIndex].answer);
         stopClock();
-        totalIncorrectQuestions--;
+        totalIncorrectQuestions++
 
     }else{
         console.log("Error with stateString, no matches found");
@@ -237,7 +243,10 @@ function resetGame(){
     clockRunning = false;
     gameStart();
 }
-
+$(document).on('click', '#play-again', function(){
+    togglePlayAndSummaryScreen();
+    resetGame();
+});
 
 
 
