@@ -11,13 +11,13 @@
     <title>Trivia</title>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="trivia-container">
         <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-12 jumbotron">
 
             
                 <h1 class="display-4">TRIVIA</h1>
-                <h2 class = "display-4" id ="count-down">10</h2>
+                <h2 class = "display-5" id ="count-down">10</h2>
                 <p class="lead" id="question-text"></p>
                 <hr class="my-4" >
                 <div class  = "row" id="answers">
@@ -28,17 +28,26 @@
         </div>
     </div>
 
+    <div class="container hidden" id="summary-container">
+        <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12 jumbotron">
+                    <h1 class="display-4">TRIVIA SUMMARY</h1>
+                    <h2 class = "display-5">Here are your Results:</h2>
+                    <p class="lead" id="results">15333</p> 
+                    <hr class="my-4">
+                        <button class="btn btn-primary" id="play-again">Click Here to Play Again</button>                      
+                </div>
+        </div>
+    </div>
+
     <div class="modal" id="answer-modal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"></h5>
+                <h5 class="modal-title" id="user-message-title"></h5>
             </div>
             <div class="modal-body">
                 <p id="user-message"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="user-action">Next Question</button>
             </div>
             </div>
         </div>

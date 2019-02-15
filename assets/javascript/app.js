@@ -12,16 +12,14 @@ function TriviaQuestion(cQuestion,cAnswer,cAnswersArray ,cIsanswered){
   var totalIncorrectQuestions = 0;
   const winState = "win";
   const loseState = "lose";
-  const fixedCountDownAmount = 10;
-  const timeOut = 3000;
-  var countDownAmount = 10;
+  const timesUpState = "timesup";
+  const fixedCountDownAmount = 1; //10
+  const timeOut = 1000; //3000
+  var countDownAmount = 1; //10
   var countDownClock;
   var clockRunning = false;
 
-  
-  
-
-  $(document).ready(function(){
+  function gameStart(){
     var testOne = new TriviaQuestion("Question 1","correct",["incorrect 1","incorrect 2","correct", "incorrect 3"],false);
     questionBank.push(testOne);
 
@@ -33,8 +31,7 @@ function TriviaQuestion(cQuestion,cAnswer,cAnswersArray ,cIsanswered){
 
     var testFour = new TriviaQuestion("Question 4","correct",["incorrect 1","incorrect 2","correct", "incorrect 3"],false);
     questionBank.push(testFour);
-    // var testTwo = new TriviaQuestion("When do we want it","now","bullshit 1","bullshit 2","bullshit 3",false);
-    // questionBank.push(testTwo);
+    
 
     //Log the question bank
     for(var i = 0;i<questionBank.length;i++){
@@ -43,20 +40,25 @@ function TriviaQuestion(cQuestion,cAnswer,cAnswersArray ,cIsanswered){
 
     //Populate question to the ui
     populateQuestion();
+  }
+  
+
+  $(document).ready(function(){
+    gameStart();
 });
 
 
 $(document).on('click', '.answer-button', function(){
      console.log("Clicked");
-        
+     stopClock();
+     questionBank[currentQuestionIndex].isAnswered = true;
+     
             if($(this).text() === questionBank[currentQuestionIndex].answer){
                 //Got Answer Correct
                 console.log("Correct");
-                questionBank[currentQuestionIndex].isAnswered = true;
-                currentQuestionIndex++;
-                totalCorrectQuestions++;
+               
+                
                 //resetClock();
-                stopClock();
                 displayModalWithState(winState);
 
                
@@ -68,11 +70,9 @@ $(document).on('click', '.answer-button', function(){
         
         
             }else{
-                totalIncorrectQuestions--;
                 displayModalWithState(loseState);
 
 
-            //TO DO: Alert you got it wrong.
                 //Got Answer Incorrect
                 console.log("Incorrect");
             }
@@ -90,16 +90,17 @@ $("#user-action").click(function(){
 
 function populateQuestion(){
     
+    removeAnswerChoices();
     if(currentQuestionIndex <= questionBank.length - 1){
         resetClock();
         startClock();
         console.log("Loading Next Question");
-        removeAnswerChoices();
         //Load Question
         loadQuestion(questionBank[currentQuestionIndex]);
 
     }else{
         //TO DO: Game Over
+        togglePlayAndSummaryScreen();
         console.log("Thats all the questions");
     }
 }
@@ -144,19 +145,30 @@ function displayModalWithState(stateString){
     if(stateString === winState){
         //TO DO: Display Win modal
         console.log("Win");
-        $("#user-message").text("You answered correct!");
+        totalCorrectQuestions++;
+        $("#user-message-title").text("Correct")
+        $("#user-message").text("You got the answer!");
 
     }else if(stateString === loseState){
         //TO DO: Display Lose modal
-        $("#user-message").text("You answered incorrectly!");
-        console.log("Lose");
+        $("#user-message-title").text("Incorrect")
+        $("#user-message").text("The correct answer was "+questionBank[currentQuestionIndex].answer);
+        totalIncorrectQuestions--;
 
+
+    }else if(stateString === timesUpState){
+        $("#user-message-title").text("Time's Up")
+        $("#user-message").text("The correct answer was "+questionBank[currentQuestionIndex].answer);
+        stopClock();
+        totalIncorrectQuestions--;
 
     }else{
         console.log("Error with stateString, no matches found");
     }
 
+
     setTimeout(function(){
+        currentQuestionIndex++;
         populateQuestion();
         $("#answer-modal").modal('toggle');
     },timeOut);
@@ -179,6 +191,8 @@ function countDown(){
         $("#count-down").text(countDownAmount.toString());
     }else{
         console.log("Over");
+        displayModalWithState(timesUpState);
+        $("#answer-modal").modal('toggle');
         //clearInterval(countDownClock);
     }       
     
@@ -192,6 +206,36 @@ function stopClock(){
 function resetClock(){
     countDownAmount = fixedCountDownAmount;
     $("#count-down").text(countDownAmount.toString());
+}
+
+function togglePlayAndSummaryScreen(){
+    var triviaContainer =$("#trivia-container");
+    var summaryContainer =$("#summary-container");
+
+    if(triviaContainer.hasClass("hidden")){ 
+        triviaContainer.removeClass('hidden');
+        summaryContainer.addClass('hidden');
+    }else if(summaryContainer.hasClass("hidden")){
+        resetClock();
+        stopClock();
+        populateResults();
+        triviaContainer.addClass('hidden');
+        summaryContainer.removeClass('hidden');
+    }
+}
+function populateResults(){
+    $("#results").text("You got "+ totalCorrectQuestions +" correct. " +"You got " +totalIncorrectQuestions+" incorrect");
+}
+
+function resetGame(){
+    questionBank = [];
+    currentQuestionIndex = 0;
+    totalQuestions = 5;
+    totalCorrectQuestions = 0;
+    totalIncorrectQuestions = 0;
+    countDownAmount = 1;
+    clockRunning = false;
+    gameStart();
 }
 
 
