@@ -10,9 +10,18 @@ function TriviaQuestion(cQuestion,cAnswer,cAnswersArray ,cIsanswered){
   var totalQuestions = 5;
   var totalCorrectQuestions = 0;
   var totalIncorrectQuestions = 0;
+  const winState = "win";
+  const loseState = "lose";
+  const fixedCountDownAmount = 10;
+  const timeOut = 3000;
+  var countDownAmount = 10;
+  var countDownClock;
+  var clockRunning = false;
+
+  
+  
 
   $(document).ready(function(){
-
     var testOne = new TriviaQuestion("Question 1","correct",["incorrect 1","incorrect 2","correct", "incorrect 3"],false);
     questionBank.push(testOne);
 
@@ -46,21 +55,22 @@ $(document).on('click', '.answer-button', function(){
                 questionBank[currentQuestionIndex].isAnswered = true;
                 currentQuestionIndex++;
                 totalCorrectQuestions++;
+                //resetClock();
+                stopClock();
+                displayModalWithState(winState);
 
-                //Load next question
-                populateQuestion();
+               
             
             //TO DO: Delete this for loop when done
                 for(var i = 0;i<questionBank.length;i++){
                     console.log(questionBank[i]);
                 }
         
-                //TO DO: Alert, you got it correct!, you have x questions to go. Next Question button.
-        
-        
         
             }else{
                 totalIncorrectQuestions--;
+                displayModalWithState(loseState);
+
 
             //TO DO: Alert you got it wrong.
                 //Got Answer Incorrect
@@ -69,9 +79,20 @@ $(document).on('click', '.answer-button', function(){
        
 });
 
+
+
+$("#user-action").click(function(){
+    console.log("Hit");
+    populateQuestion();
+    $("#answer-modal").modal('toggle');
+
+});
+
 function populateQuestion(){
-      
+    
     if(currentQuestionIndex <= questionBank.length - 1){
+        resetClock();
+        startClock();
         console.log("Loading Next Question");
         removeAnswerChoices();
         //Load Question
@@ -88,9 +109,12 @@ function loadQuestion(questionObject){
     $("#question-text").text(questionObject.question);
     questionObject = randomizeAnswerArray(questionObject);
     for(var i = 0; i < questionObject.answerArray.length;i++){
-        $("#answers").append('<button class="btn btn-success mx-auto answer-button">'+questionObject.answerArray[i]+'</button>');
+        $("#answers").append('<button class="btn btn-success mx-auto answer-button" id = '+ i + '>'+questionObject.answerArray[i]+'</button>');
+        $("#"+i.toString()).attr('data-toggle','modal');
+        $("#"+i.toString()).attr('data-target','#answer-modal');
     }
 }
+
 
 function randomizeAnswerArray(questionObject){
     var orginalIndex = 0;
@@ -114,6 +138,62 @@ function removeAnswerChoices(){
         console.log("Parent has children");
     }
 }
+
+function displayModalWithState(stateString){
+
+    if(stateString === winState){
+        //TO DO: Display Win modal
+        console.log("Win");
+        $("#user-message").text("You answered correct!");
+
+    }else if(stateString === loseState){
+        //TO DO: Display Lose modal
+        $("#user-message").text("You answered incorrectly!");
+        console.log("Lose");
+
+
+    }else{
+        console.log("Error with stateString, no matches found");
+    }
+
+    setTimeout(function(){
+        populateQuestion();
+        $("#answer-modal").modal('toggle');
+    },timeOut);
+}
+
+function startClock(){
+
+    if(!clockRunning){
+        countDownClock = setInterval(countDown,1000);
+        clockRunning = true;
+    }
+   
+}
+
+
+function countDown(){
+    if(countDownAmount >0){
+        //console.log(countDownAmount--);
+        countDownAmount --;
+        $("#count-down").text(countDownAmount.toString());
+    }else{
+        console.log("Over");
+        //clearInterval(countDownClock);
+    }       
+    
+}
+
+function stopClock(){
+    clearInterval(countDownClock);
+    clockRunning = false;
+}
+
+function resetClock(){
+    countDownAmount = fixedCountDownAmount;
+    $("#count-down").text(countDownAmount.toString());
+}
+
 
 
 
